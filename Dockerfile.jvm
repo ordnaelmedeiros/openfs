@@ -1,0 +1,34 @@
+# Stage 2: Temurin runtime
+FROM eclipse-temurin:21-jre AS temurin
+
+# Stage 2: build the application (JVM jar)
+FROM quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21 AS build
+USER root
+WORKDIR /workspace/server
+
+COPY server/mvnw ./mvnw
+COPY server/.mvn ./.mvn
+COPY server/pom.xml ./pom.xml
+RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.6.1:go-offline
+
+COPY server/src/main ./src/main
+RUN ./mvnw -B package -DskipTests
+
+# Stage 3: Debian 12 runtime image
+FROM debian:12.11-slim AS runtime
+RUN groupadd --gid 2000 openfs \
+    && useradd --uid 2000 --gid 2000 --create-home --shell /usr/sbin/nologin openfs
+WORKDIR /home/openfs
+EXPOSE 8081 8082 8083
+USER 2000
+ENTRYPOINT ["java", "-Dquarkus.http.host=0.0.0.0", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", "-jar", "/home/openfs/quarkus-run.jar"]
+
+ENV LANGUAGE='en_US:en'
+ENV JAVA_HOME='/opt/java/openjdk'
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+COPY --from=temurin /opt/java/openjdk /opt/java/openjdk
+COPY --from=build --chown=2000:2000 /workspace/server/target/quarkus-app/lib/ /home/openfs/lib/
+COPY --from=build --chown=2000:2000 /workspace/server/target/quarkus-app/*.jar /home/openfs/
+COPY --from=build --chown=2000:2000 /workspace/server/target/quarkus-app/app/ /home/openfs/app/
+COPY --from=build --chown=2000:2000 /workspace/server/target/quarkus-app/quarkus/ /home/openfs/quarkus/

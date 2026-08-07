@@ -1,0 +1,26 @@
+quarkus:
+  management:
+    enabled: true
+    port: ${openfs.management.port}
+  http:
+    port: ${openfs.http.port}
+    test-port: ${openfs.http.test-port}
+    record-request-start-time: true
+    access-log:
+      enabled: ${openfs.log.access}
+      category: openfs.api.access-log
+      pattern: "%m %U %s %D ms"
+
+openfs:
+  management:
+    port: 8081
+    test-port: 9081
+  http:
+    port: 8082
+    test-port: 9082
+  s3:
+    port: 8083
+    test-port: 9083
+    virtual-threads-pool-size: 10
+  log:
+    access: true

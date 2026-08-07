@@ -1,0 +1,11 @@
+.git
+.gitignore
+README.md
+AGENTS.md
+LICENSE
+.vscode
+.quarkus
+nc
+scripts
+server/target
+server/src/test

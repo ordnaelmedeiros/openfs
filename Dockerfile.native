@@ -1,0 +1,24 @@
+# Stage 1: build the native executable
+FROM quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21 AS build
+USER root
+WORKDIR /workspace/server
+
+COPY server/mvnw ./mvnw
+COPY server/.mvn ./.mvn
+COPY server/pom.xml ./pom.xml
+RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.6.1:go-offline
+
+COPY server/src/main ./src/main
+RUN ./mvnw -B package -Dnative -DskipTests
+
+# Stage 2: minimal runtime image
+FROM debian:12.11-slim AS runtime
+RUN groupadd --gid 2000 openfs \
+    && useradd --uid 2000 --gid 2000 --create-home --shell /usr/sbin/nologin openfs
+WORKDIR /home/openfs
+EXPOSE 8081 8082 8083
+USER 2000
+ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]
+
+COPY --from=build --chown=2000:2000 /workspace/server/target/*-runner /home/openfs/application
+RUN chmod 0755 /home/openfs/application
