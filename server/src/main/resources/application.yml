@@ -1,4 +1,6 @@
 quarkus:
+  banner:
+    path: banner.txt
   management:
     enabled: true
     port: ${openfs.management.port}
