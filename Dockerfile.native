@@ -15,6 +15,7 @@ RUN ./mvnw -B package -Dnative -DskipTests
 FROM debian:12.11-slim AS runtime
 RUN groupadd --gid 2000 openfs \
     && useradd --uid 2000 --gid 2000 --create-home --shell /usr/sbin/nologin openfs
+RUN mkdir /data && chown 2000:2000 /data
 WORKDIR /home/openfs
 EXPOSE 8081 8082 8083
 USER 2000

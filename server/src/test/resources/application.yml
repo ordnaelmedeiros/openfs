@@ -1,12 +1,7 @@
 openfs:
   management:
     port: 9081
-    test-port: 9081
   http:
     port: 9082
-    test-port: 9082
   s3:
     port: 9083
-    test-port: 9083
-  log:
-    access: false

@@ -17,6 +17,7 @@
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.5.4</surefire-plugin.version>
     <testcontainers.version>1.21.3</testcontainers.version>
+    <aws.sdk.version>2.29.26</aws.sdk.version>
   </properties>
 
   <dependencyManagement>
@@ -55,6 +56,11 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-config-yaml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+      <version>${aws.sdk.version}</version>
     </dependency>
 
     <!-- tests -->

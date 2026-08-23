@@ -8,16 +8,23 @@ public interface OpenFsConfig {
 
   PortConfig http();
 
-  PortConfig s3();
+  S3Config s3();
+
+  DataConfig data();
 
   LogConfig log();
 
+  interface DataConfig {
+    String path();
+  }
+
   interface PortConfig {
     int port();
+  }
 
-    int testPort();
+  interface S3Config {
+    int port();
 
-    @io.smallrye.config.WithDefault("10")
     int virtualThreadsPoolSize();
   }
 

@@ -19,8 +19,6 @@ public class S3ResponseWriter {
 
   public Uni<Void> write(RoutingContext ctx, Object entity) {
     return Uni.createFrom().voidItem().onItem().invoke(() -> {
-      ctx.response().setStatusCode(200);
-
       if (entity == null) {
         ctx.response().endAndForget();
         return;

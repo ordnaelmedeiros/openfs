@@ -1,8 +1,10 @@
 package br.com.ordnaelmedeiros.openfs.testutils;
 
 import br.com.ordnaelmedeiros.openfs.config.OpenFsConfig;
+import io.quarkus.test.common.QuarkusTestResource;
 import jakarta.inject.Inject;
 
+@QuarkusTestResource(value = OpenFsTestDataResource.class, restrictToAnnotatedClass = true)
 public abstract class BaseResourceTestS3 {
   protected static final int S3_CONTAINER_PORT = 8083;
 
