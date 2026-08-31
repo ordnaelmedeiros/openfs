@@ -8,7 +8,11 @@ import jakarta.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class BucketStorageService {
@@ -35,6 +39,34 @@ public class BucketStorageService {
     validateBucketName(bucketName);
     Path bucketPath = getBucketPath(bucketName);
     return Files.isDirectory(bucketPath);
+  }
+
+  public List<BucketInfo> listBuckets() throws IOException {
+    Path root = Path.of(config.data().path());
+    if (!Files.isDirectory(root)) {
+      return List.of();
+    }
+    try (Stream<Path> stream = Files.list(root)) {
+      return stream
+        .filter(Files::isDirectory)
+        .map(path -> path.getFileName().toString())
+        .filter(name -> BUCKET_NAME_PATTERN.matcher(name).matches())
+        .sorted()
+        .map(this::toBucketInfo)
+        .flatMap(Optional::stream)
+        .toList();
+    }
+  }
+
+  private Optional<BucketInfo> toBucketInfo(String bucketName) {
+    Path bucketPath = getBucketPath(bucketName);
+    try {
+      BasicFileAttributes attributes = Files.readAttributes(bucketPath, BasicFileAttributes.class);
+      return Optional.of(new BucketInfo(bucketName, attributes.creationTime().toInstant()));
+    } catch (IOException e) {
+      Log.warnf(e, "Failed to read attributes for bucket: %s", bucketName);
+      return Optional.empty();
+    }
   }
 
   private void validateBucketName(String bucketName) {
