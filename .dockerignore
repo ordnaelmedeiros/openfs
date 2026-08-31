@@ -5,6 +5,7 @@ AGENTS.md
 LICENSE
 .vscode
 .quarkus
+.plan
 nc
 scripts
 server/target
