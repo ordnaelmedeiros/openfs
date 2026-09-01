@@ -82,7 +82,7 @@ public class BucketStorageService {
     }
   }
 
-  private Path getBucketPath(String bucketName) {
+  public Path getBucketPath(String bucketName) {
     return Path.of(config.data().path()).resolve(bucketName);
   }
 }
