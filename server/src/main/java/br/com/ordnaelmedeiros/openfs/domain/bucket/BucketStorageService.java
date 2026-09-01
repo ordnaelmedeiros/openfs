@@ -41,6 +41,13 @@ public class BucketStorageService {
     return Files.isDirectory(bucketPath);
   }
 
+  public void deleteBucket(String bucketName) throws IOException {
+    validateBucketName(bucketName);
+    Path bucketPath = getBucketPath(bucketName);
+    Files.delete(bucketPath);
+    Log.debugf("Bucket deleted: %s", bucketPath);
+  }
+
   public List<BucketInfo> listBuckets() throws IOException {
     Path root = Path.of(config.data().path());
     if (!Files.isDirectory(root)) {
